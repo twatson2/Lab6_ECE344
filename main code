@@ -157,7 +157,7 @@ int main(void)
         SysTick_mSecDelay(10);  //0.1s
         GPIO_PORTE_DATA_R = light & 0xF;  //lower four count bits: PE0-PE3
         GPIO_PORTD_DATA_R = (light & 0xF0) >> 4; //upper four count bits: PD0-PD3
-        SSIOWrite(0x1b); //Display reset 
+        SSI0Write(0x1b); //Display reset 
 
         cbuffer = "[1;0H"; //clear screen
         putsSPI0(strlen(cbuffer), cbuffer);  //write out string
@@ -241,6 +241,15 @@ void UART2Tx(char c)
 {
     while((UART2_FR_R & 0x20) != 0);     /* wait until Tx buffer not full */
     UART2_DR_R = c;                      /* before giving it another byte */
+}
+
+void printUART(char *s){
+	int size = (int) strlen(s);
+	for(int i = 0; i < size; i++){
+		UART2Tx(s[i]);
+	}
+	SysTick_mSecDelay(200);
+	UART2Tx(0x0D);
 }
 
 /* initialize I2C1 as master and the port pins */
